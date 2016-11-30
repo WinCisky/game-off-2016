@@ -138,5 +138,5 @@ This game is an off-topic (due to the University I've had litte time to develop 
 
 (https://en.wikipedia.org/wiki/Binary_search_algorithm)
 
-*In order to play you have to install the game on your phone (Android 2.3.1+ only)
-*The game goal is to stay alive -> (keep the same distance from all the walls)
+In order to play you have to install the game on your phone (Android 2.3.1+ only)
+The game goal is to stay alive -> (keep the same distance from all the walls)
