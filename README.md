@@ -129,3 +129,14 @@ GLHF! <3
 [github-signup-org]:    https://github.com/organizations/new
 [github-support]:       https://github.com/contact?form%5Bsubject%5D=GitHub%20Game%20Off
 [wufoo-form]:           https://gameoff.wufoo.com/forms/game-off-2016/
+
+(GAME DESCRIPTION)
+
+This game is an off-topic (due to the University I've had litte time to develop -> 2 days :D)
+
+## This game is inspired to the Binary search algorithm
+
+(https://en.wikipedia.org/wiki/Binary_search_algorithm)
+
+*In order to play you have to install the game on your phone (Android 2.3.1+ only)
+*The game goal is to stay alive -> (keep the same distance from all the walls)
