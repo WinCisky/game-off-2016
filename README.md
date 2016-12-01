@@ -135,8 +135,8 @@ GLHF! <3
 This game is an off-topic (due to the University I've had litte time to develop -> 2 days :D)
 
 ## This game is inspired to the Binary search algorithm
-
+Play store: https://play.google.com/store/apps/details?id=com.AZTEKIS.Kiube 
 (https://en.wikipedia.org/wiki/Binary_search_algorithm)
 
-In order to play you have to install the game on your phone (Android 2.3.1+ only)
-The game goal is to stay alive -> (keep the same distance from all the walls)
+* In order to play you have to install the game on your phone (Android 2.3.1+ only)
+* The game goal is to stay alive -> (keep the same distance from all the walls)
