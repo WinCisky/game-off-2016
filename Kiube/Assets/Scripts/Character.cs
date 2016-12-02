@@ -30,6 +30,7 @@ public class Character : MonoBehaviour {
                     // handle success or failure
                 });
                 */
+                Debug.Log("Dead");
                 if(Camera.main.GetComponent<Walls>().points > PlayerPrefs.GetInt("player_highest_score"))
                 {
                     PlayerPrefs.SetInt("player_highest_score", Camera.main.GetComponent<Walls>().points);

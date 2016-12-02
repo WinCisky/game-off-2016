@@ -7,10 +7,12 @@ public class Walls : MonoBehaviour
 
     public GameObject Char, Light, wallT, wallB, wallR, wallL, gLight, cLight;
     public Text score;
-    public int points = 0, counter = 0;
-    float t, speed = 3, actualScale;
+    public int points = 0, counter = 0, reset_counter = 3;
+    float t, speed = 3, actualScale, waitTime = 3;
     Vector3 scalePos;
     bool moveT, moveB, moveR, moveL, scale;
+
+    public Material ch, bkg;
 
     public struct Pos
     {
@@ -21,6 +23,7 @@ public class Walls : MonoBehaviour
 
     void Awake()
     {
+        actualScale = Camera.main.orthographicSize;
 
         /*
         wallL.SetActive(false);
@@ -41,12 +44,13 @@ public class Walls : MonoBehaviour
         moveL = false;
         moveB = false;
 
-        free.E = 10;
-        free.N = 10;
-        free.W = -10;
-        free.S = -10;
+        free.E = 7;
+        free.N = 7;
+        free.W = -7;
+        free.S = -7;
     }
 
+    //to check
     float FilledArea(Pos free)
     {
         return ((100 / ((Camera.main.aspect * 20) * (20))) * ((Mathf.Abs(free.W) + free.E) * (free.N + Mathf.Abs(free.S))));
@@ -57,6 +61,9 @@ public class Walls : MonoBehaviour
         t = Time.time + 3;
 
         Debug.Log(FilledArea(free));
+
+        ch.color = HexToColor("009688");
+        bkg.color = HexToColor("B2DFDB");
     }
 
     void FixedUpdate()
@@ -64,7 +71,7 @@ public class Walls : MonoBehaviour
         if (Time.time > t)
         {
             StartCoroutine(MoveWall());
-            t += 3;
+            t += waitTime;
         }
         /*
         if (wallT.transform.position.y == free.N)
@@ -90,27 +97,29 @@ public class Walls : MonoBehaviour
     {
         if (moveT)
         {
-            wallT.transform.position = Vector3.Lerp(wallT.transform.position, new Vector3(0, free.N, 0), Time.deltaTime / speed);
+            wallT.transform.position = Vector3.Lerp(wallT.transform.position, new Vector3(wallT.transform.position.x, free.N, 0), Time.deltaTime / speed);
         }
         if (moveB)
         {
-            wallB.transform.position = Vector3.Lerp(wallB.transform.position, new Vector3(0, free.S, 0), Time.deltaTime / speed);
+            wallB.transform.position = Vector3.Lerp(wallB.transform.position, new Vector3(wallB.transform.position.x, free.S, 0), Time.deltaTime / speed);
         }
         if (moveR)
         {
-            wallR.transform.position = Vector3.Lerp(wallR.transform.position, new Vector3(free.E, 0, 0), Time.deltaTime / speed);
+            wallR.transform.position = Vector3.Lerp(wallR.transform.position, new Vector3(free.E, wallR.transform.position.y, 0), Time.deltaTime / speed);
         }
         if (moveL)
         {
-            wallL.transform.position = Vector3.Lerp(wallL.transform.position, new Vector3(free.W, 0, 0), Time.deltaTime / speed);
+            wallL.transform.position = Vector3.Lerp(wallL.transform.position, new Vector3(free.W, wallL.transform.position.y, 0), Time.deltaTime / speed);
         }
         if (scale)
         {
-            Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, actualScale, Time.deltaTime);
+            Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, 15, Time.deltaTime);
             Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, scalePos, Time.deltaTime);
+            Char.transform.localScale = Vector3.Lerp(Char.transform.localScale, Vector3.one, Time.deltaTime);
         }
     }
 
+    //find the most close wall
     char shortestDist(float distN,float distS,float distE,float distW)
     {
         if (distN < distS)
@@ -165,40 +174,35 @@ public class Walls : MonoBehaviour
         }
     }
 
+    char RandomWall()
+    {
+        int r = Random.Range(0, 4);
+        if (r == 0)
+        {
+            return 'N';
+        }else if (r == 1)
+        {
+            return 'S';
+        }else if (r == 2)
+        {
+            return 'E';
+        }else
+        {
+            return 'W';
+        }
+    }
+
+    Color HexToColor(string hex)
+    {
+        byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+        byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+        byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+        return new Color32(r, g, b, 250);
+    }
+
     IEnumerator MoveWall()
     {
-        //Mathf.Abs(Char.transform.position.x) > Mathf.Abs(Char.transform.position.y)
-
-        /*
-        Debug.Log((Mathf.Abs(Char.transform.position.x) + ((free.E + free.W) / 2)) + " " + (Mathf.Abs(Char.transform.position.y) + ((free.N + free.S) / 2)));
-        if ((Mathf.Abs(Char.transform.position.x)+((free.E+free.W)/2)) > (Mathf.Abs(Char.transform.position.y)+((free.N+free.S)/2)))
-        {
-            if (Char.transform.position.x > ((free.E + free.W) / 2))
-            {
-                free.E = ((free.W + free.E) / 2f);
-                moveR = true;
-            }
-            else
-            {
-                free.W = ((free.E + free.W) / 2f);
-                moveL = true;
-            }
-        }
-        else
-        {
-            if (Char.transform.position.y > ((free.N + free.S) / 2))
-            {
-                free.N = ((free.S + free.N) / 2f);
-                moveT = true;
-            }
-            else
-            {
-                free.S = ((free.N + free.S) / 2f);
-                moveB = true;
-            }
-        }
-        */
-
+        
         //calcolo la distanza dalle 4 mura
         float distN, distS, distE, distW;
         distN = ((((Char.transform.position.x) - ((wallR.transform.position.x) - (wallL.transform.position.x))) * ((Char.transform.position.y) - (wallT.transform.position.y))) / 2);
@@ -207,8 +211,13 @@ public class Walls : MonoBehaviour
         distW = ((((wallL.transform.position.x) - (Char.transform.position.x)) * ((Char.transform.position.y) - ((wallT.transform.position.y) - (wallB.transform.position.y)))) / 2);
         Debug.Log("N:" + distN + " S:" + distS + " E:" + distE + " W:" + distW);
         Debug.Log("N:" + wallT.transform.position.y + " S:" + wallB.transform.position.y + " E:" + wallR.transform.position.x + " W:" + wallL.transform.position.x);
+        char sDist;
+        /*
         //valuto la distanza minore
-        char sDist = shortestDist(distN, distS, distE, distW);
+        sDist = shortestDist(distN, distS, distE, distW);
+        */
+        //scelgo a caso il muro da muovere
+        sDist = RandomWall();
         //muovo il muro con la distanza minore
         switch (sDist)
         {
@@ -231,28 +240,66 @@ public class Walls : MonoBehaviour
         }
 
         Light.transform.position = new Vector3(((free.W + free.E) / 2), ((free.S + free.N) / 2), 0);
-        scalePos = new Vector3(((free.W + free.E) / 2), ((free.S + free.N) / 2), -10);
         points++;
         score.text = points.ToString();
-        if (counter == 3)
+        if (counter == reset_counter)
         {
-            gLight.GetComponent<DynamicLight>().LightRadius = gLight.GetComponent<DynamicLight>().LightRadius / 3;
-            cLight.GetComponent<DynamicLight>().LightRadius = cLight.GetComponent<DynamicLight>().LightRadius / 3;
-            actualScale = Camera.main.orthographicSize / 4;
-            scale = true;            
-            Char.transform.localScale = Char.transform.localScale / 4;
-
-            Vector2 sizeW, sizeH;
-            sizeW = wallT.GetComponent<BoxCollider2D>().size;
-            sizeW.y = sizeW.y/2;
-            wallT.GetComponent<BoxCollider2D>().size = sizeW;
-            wallB.GetComponent<BoxCollider2D>().size = sizeW;
-            sizeH = wallR.GetComponent<BoxCollider2D>().size;
-            sizeH.x = sizeH.x / 2;
-            wallR.GetComponent<BoxCollider2D>().size = sizeH;
-            wallL.GetComponent<BoxCollider2D>().size = sizeH;
+            //scale up lights
+            //gLight.GetComponent<DynamicLight>().LightRadius = gLight.GetComponent<DynamicLight>().LightRadius * 3;
+            //cLight.GetComponent<DynamicLight>().LightRadius = cLight.GetComponent<DynamicLight>().LightRadius * 3;
+            //allontano le mura
+            float center_x, center_y;
+            center_x = ((free.E + free.W) / 2);
+            center_y = ((free.N + free.S) / 2);
+            free.E = center_x + 7f;
+            free.W = center_x - 7f;
+            free.N = center_y + 7f;
+            free.S = center_y - 7f;
+            wallT.transform.position = new Vector3(center_x, free.N, 0);
+            wallB.transform.position = new Vector3(center_x, free.S, 0);
+            wallR.transform.position = new Vector3(free.E, center_y, 0);
+            wallL.transform.position = new Vector3(free.W, center_y, 0);
+            scale = true;          
+            //reset  
             counter = 0;
-            Camera.main.transform.position = scalePos;
+            //centro la camera
+            scalePos = new Vector3(center_x, center_y, -10);
+            //scale up 
+            //Camera.main.orthographicSize = Camera.main.orthographicSize * 4;
+            Char.transform.localScale = Char.transform.localScale * 4;
+            //hard++
+            if (points > 14 && points < 30)
+            {
+                //level 2
+                speed = 2;
+                ch.color = HexToColor("00BCD4");
+                bkg.color = HexToColor("B2EBF2");
+            }
+            else if (points > 29 && points < 50)
+            {
+                //level 3
+                waitTime = 2;
+                reset_counter = 4;
+                ch.color = HexToColor("03A9F4");
+                bkg.color = HexToColor("B3E5FC");
+            }
+            else if(points >49 && points < 100)
+            {
+                //level 4
+                waitTime = 1.5f;
+                speed = 1.5f;
+                ch.color = HexToColor("2196F3");
+                bkg.color = HexToColor("BBDEFB");
+            }
+            else if (points > 99)
+            {
+                //level 5
+                waitTime = 1f;
+                speed = 1f;
+                reset_counter = 5;
+                ch.color = HexToColor("3F51B5");
+                bkg.color = HexToColor("C5CAE9");
+            }
         }
         else
         {
